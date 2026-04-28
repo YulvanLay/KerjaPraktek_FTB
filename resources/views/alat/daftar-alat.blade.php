@@ -27,9 +27,13 @@
             <th>Nama Alat</th>
             @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <th>Kode Sinta</th>
+            @endif
             <th>Jenis</th>
+            @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <th>Harga</th>
+            @endif
             <th>Stok</th>
+            @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <th>Stok di Pinjam</th>
             @endif
             <th>Merek</th>
@@ -48,9 +52,13 @@
             <td>{{ $alat->nama_alat }}</td>
             @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <td>{{ $alat->kode_sinta?$alat->kode_sinta:'-' }}</td>
+            @endif
             <td>{{ $alat->jenis?$alat->jenis->jenis_alat:'-' }}</td>
+            @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <td class="text-right" style="white-space: now|rap;">Rp. {{ number_format($alat->harga, 0, ',', '.') }}</td>
+            @endif
             <td class="text-right" style="white-space: nowrap;">{{ number_format($alat->stok, 0, ',', '.') }} buah</td>
+            @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <?php 
                 $total = 0;
             ?>

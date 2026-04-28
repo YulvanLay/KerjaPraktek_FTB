@@ -31,8 +31,10 @@
             <th>Merek Bahan</th>
             @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <th>Jenis</th>
+            @endif
             <th>Harga</th>
             <th>Stok</th>
+            @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <th>Min Stok</th>
             <th>Aksi</th>
             @endif
@@ -49,8 +51,10 @@
             <td>{{ $bahan->merekBahans?$bahan->merekBahans->nama_merek:'-' }}</td>
             @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <td>{{ $bahan->jenis?$bahan->jenis->jenis_bahan:'-' }}</td>
+            @endif
             <td class="text-right">Rp. {{ $bahan->harga_bahan }}</td>
             <td class="text-right">{{ $bahan->stok  }} {{ $bahan->satuan }}</td>
+            @if(Auth()->user()->laboran || Auth()->user()->kalab || Auth()->user()->koordinator)
             <td class="text-right">{{ $bahan->minimum_stok  }} {{ $bahan->satuan }}</td>
             <td style="white-space: nowrap;">
                 <a class="btn btn-link" href="{{ action('BahanController@getDetailBahanPemakaian', $bahan->kode_bahan) }}" title="Lihat Detail" aria-label="Lihat Detail"><i class="fas fa-list"></i></a>
