@@ -218,4 +218,92 @@
         });
     }
 </script>
+
+<!-- Floating gambar pedoman pemakaian bahan -->
+<img
+    id="floatingPedoman"
+    src="{{ URL::asset('images/pedoman_pemakaian_bahan.png') }}"
+    alt="Pedoman Pemakaian Bahan"
+    title="Klik untuk perbesar"
+>
+ 
+<!-- Lightbox overlay -->
+<div id="pedomanOverlay">
+    <img
+        src="{{ URL::asset('images/pedoman_pemakaian_bahan.png') }}"
+        alt="Pedoman Pemakaian Bahan"
+        id="pedomanZoom"
+    >
+</div>
+ 
+<style>
+    /* Gambar kecil fixed di pojok kanan bawah */
+    #floatingPedoman {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 120px;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 14px rgba(0,0,0,.25);
+        cursor: pointer;
+        z-index: 1040;
+        transition: transform .2s, box-shadow .2s;
+        border: 2px solid #fff;
+    }
+    #floatingPedoman:hover {
+        transform: scale(1.07);
+        box-shadow: 0 6px 20px rgba(0,0,0,.32);
+    }
+ 
+    /* Overlay gelap */
+    #pedomanOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.72);
+        z-index: 1050;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    #pedomanOverlay.show {
+        display: flex;
+    }
+ 
+    /* Gambar besar di tengah */
+    #pedomanZoom {
+        max-width: 90vw;
+        max-height: 90vh;
+        border-radius: 10px;
+        box-shadow: 0 8px 40px rgba(0,0,0,.5);
+        cursor: default;
+        object-fit: contain;
+    }
+</style>
+ 
+<script>
+    var floatImg    = document.getElementById('floatingPedoman');
+    var overlay     = document.getElementById('pedomanOverlay');
+    var zoomImg     = document.getElementById('pedomanZoom');
+ 
+    // Buka lightbox saat gambar kecil diklik
+    floatImg.addEventListener('click', function () {
+        overlay.classList.add('show');
+    });
+ 
+    // Tutup lightbox saat klik di luar gambar (area overlay)
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) {
+            overlay.classList.remove('show');
+        }
+    });
+ 
+    // Tutup juga dengan tombol Escape
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            overlay.classList.remove('show');
+        }
+    });
+</script>
 @endsection
