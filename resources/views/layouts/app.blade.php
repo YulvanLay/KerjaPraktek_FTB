@@ -92,6 +92,23 @@
                             <a class="dropdown-item" href="{{ url('terima-bahan') }}">Penerimaan Bahan</a>
                         </div>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Fasilitas Lab
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">Daftar Fasilitas</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Inventaris Lab
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">Daftar Inventaris</a>
+                        </div>
+                    </li>
                     <li class="nav-item dropdown{{ request()->is('laporan-peminjaman-alat*') || request()->is('laporan-pemakaian-bahan*') || request()->is('minstok-bahan*') || request()->is('total-pemakaian*')? ' active' : '' }}">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Laporan</a>
                         <div class="dropdown-menu">

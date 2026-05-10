@@ -64,6 +64,9 @@ class AlatController extends Controller
      */
     public function store(AlatStoreRequest $request)
     {
+        if (auth()->user()->aktif != 1) {
+         return back()->with('status', 'Laboran tidak aktif tidak bisa menambah alat.')->with('kode', 0);
+        }
         $last_id = AlatLab::orderBy('kode_alat', 'desc')->first()['kode_alat'];
         $last_id = (int) explode('A', $last_id)[1] + 1;
         $next_id = 'A' . sprintf("%04s", $last_id);
@@ -114,6 +117,9 @@ class AlatController extends Controller
      */
     public function update(AlatUpdateRequest $request, $id)
     {
+        if (auth()->user()->aktif != 1) {
+        return back()->with('status', 'Laboran tidak aktif tidak bisa update stok.')->with('kode', 0);
+        }
         $alat = AlatLab::find($id);
         $alat->nama_alat = $request->get('ubah_nama_alat');
         $alat->kode_sinta = $request->get('ubah_kode_sinta');
@@ -135,6 +141,9 @@ class AlatController extends Controller
      */
     public function destroy($id)
     {
+        if (auth()->user()->aktif != 1) {
+           return back()->with('status', 'Laboran tidak aktif tidak bisa menghapus alat.') ->with('kode', 0);
+        }
         $alat = AlatLab::find($id);
         $nama_alat = $alat->nama_alat;
 

@@ -76,6 +76,9 @@ class BahanController extends Controller
      */
     public function store(BahanStoreRequest $request)
     {
+        if (auth()->user()->aktif != 1) {
+          return back()->with('status', 'Laboran tidak aktif tidak bisa menambah bahan.')->with('kode', 0);
+        }
         $bahan = new BahanLab();
         $bahan->kode_bahan = strtoupper($request->get('kode_bahan'));
         $bahan->nama_bahan = $request->get('nama_bahan');
@@ -124,6 +127,9 @@ class BahanController extends Controller
      */
     public function update(BahanUpdateRequest $request, $id)
     {
+        if (auth()->user()->aktif != 1) {
+          return back()->with('status', 'Laboran tidak aktif tidak bisa update stock bahan.')->with('kode', 0);
+        }
         $bahan = BahanLab::find($id);
         $bahan->kode_bahan = $request->get('ubah_kode_bahan');
         $bahan->nama_bahan = $request->get('ubah_nama_bahan');
@@ -148,6 +154,9 @@ class BahanController extends Controller
      */
     public function destroy($id)
     {
+        if (auth()->user()->aktif != 1) {
+           return back()->with('status', 'Laboran tidak aktif tidak bisa menghapus barang.') ->with('kode', 0);
+        }
         $bahan = BahanLab::find($id);
         $nama_bahan = $bahan->nama_bahan;
 
