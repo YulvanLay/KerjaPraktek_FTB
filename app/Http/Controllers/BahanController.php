@@ -22,19 +22,18 @@ class BahanController extends Controller
      */
     public function index()
     {
-        if(!auth()->user()->laboran && !auth()->user()->pelanggan && !auth()->user()->koordinator && !auth()->user()->kalab)
+        if (!auth()->user()->laboran && !auth()->user()->pelanggan && !auth()->user()->koordinator && !auth()->user()->kalab)
             return response()->view('errors.403');
 
-        if(auth()->user()->laboran && auth()->user()->laboran->kode_laboran == 213030) //Perlu diganti jika penanggung jawab diganti
-        {
+        if (auth()->user()->laboran && auth()->user()->laboran->user->aktif == 1) {
+            // Semua laboran aktif bisa melihat seluruh stok termasuk yang 0
             $bahans = BahanLab::with('jenis')->with('merekBahans')->get();
             $jenisBahans = JenisBahan::get();
             $laborans = Laboran::get();
             $mereks = merekBahan::get();
-        }
-        else
-        {
-            $bahans = BahanLab::with('jenis')->with('merekBahans')->where('stok','>',0)->get();
+        } else {
+            // Pelanggan, koordinator, kalab hanya lihat stok > 0
+            $bahans = BahanLab::with('jenis')->with('merekBahans')->where('stok', '>', 0)->get();
             $jenisBahans = JenisBahan::get();
             $laborans = Laboran::get();
             $mereks = merekBahan::get();
@@ -46,14 +45,14 @@ class BahanController extends Controller
             $bahan->minimum_stok = preg_replace("/\,?0+$/", "", number_format($bahan->minimum_stok, 2, ',', '.'));
         }
 
-        return view('bahan.daftar-bahan', compact('bahans', 'jenisBahans', 'laborans','mereks'));
+        return view('bahan.daftar-bahan', compact('bahans', 'jenisBahans', 'laborans', 'mereks'));
     }
 
     public function minStok()
     {
-        if(!auth()->user()->laboran)
+        if (!auth()->user()->laboran)
             return response()->view('errors.403');
-        
+
         $bahans = BahanLab::where('stok', '<=', DB::raw('minimum_stok'))->get();
         return view('laporan.minimum-stok', compact('bahans'));
     }
@@ -77,7 +76,7 @@ class BahanController extends Controller
     public function store(BahanStoreRequest $request)
     {
         if (auth()->user()->aktif != 1) {
-          return back()->with('status', 'Laboran tidak aktif tidak bisa menambah bahan.')->with('kode', 0);
+            return back()->with('status', 'Laboran tidak aktif tidak bisa menambah bahan.')->with('kode', 0);
         }
         $bahan = new BahanLab();
         $bahan->kode_bahan = strtoupper($request->get('kode_bahan'));
@@ -92,7 +91,7 @@ class BahanController extends Controller
         $bahan->kode_laboran = $request->get('laboran');
         $bahan->save();
 
-        return redirect('/bahan')->with('status','Berhasil menambahkan bahan <strong>'.$request->get('nama_bahan').'</strong>.')->with('kode', 1)->with('id', $bahan->kode_bahan);
+        return redirect('/bahan')->with('status', 'Berhasil menambahkan bahan <strong>' . $request->get('nama_bahan') . '</strong>.')->with('kode', 1)->with('id', $bahan->kode_bahan);
     }
 
     /**
@@ -128,7 +127,7 @@ class BahanController extends Controller
     public function update(BahanUpdateRequest $request, $id)
     {
         if (auth()->user()->aktif != 1) {
-          return back()->with('status', 'Laboran tidak aktif tidak bisa update stock bahan.')->with('kode', 0);
+            return back()->with('status', 'Laboran tidak aktif tidak bisa update stock bahan.')->with('kode', 0);
         }
         $bahan = BahanLab::find($id);
         $bahan->kode_bahan = $request->get('ubah_kode_bahan');
@@ -143,7 +142,7 @@ class BahanController extends Controller
         $bahan->kode_laboran = $request->get('ubah_laboran');
         $bahan->save();
 
-        return redirect('/bahan')->with('status','Berhasil memperbarui bahan <strong>'.$bahan->kode_bahan.' - '.$bahan->nama_bahan.'</strong>.')->with('kode', 1)->with('id', $bahan->kode_bahan);
+        return redirect('/bahan')->with('status', 'Berhasil memperbarui bahan <strong>' . $bahan->kode_bahan . ' - ' . $bahan->nama_bahan . '</strong>.')->with('kode', 1)->with('id', $bahan->kode_bahan);
     }
 
     /**
@@ -155,23 +154,22 @@ class BahanController extends Controller
     public function destroy($id)
     {
         if (auth()->user()->aktif != 1) {
-           return back()->with('status', 'Laboran tidak aktif tidak bisa menghapus barang.') ->with('kode', 0);
+            return back()->with('status', 'Laboran tidak aktif tidak bisa menghapus barang.')->with('kode', 0);
         }
         $bahan = BahanLab::find($id);
         $nama_bahan = $bahan->nama_bahan;
 
-        try{
+        try {
             $bahan->delete();
-        }
-        catch(\Illuminate\Database\QueryException $e){
-            return redirect('/bahan')->with('status','Tidak dapat menghapus <strong>'.$nama_bahan.'</strong>.')->with('kode', 0);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect('/bahan')->with('status', 'Tidak dapat menghapus <strong>' . $nama_bahan . '</strong>.')->with('kode', 0);
         }
 
-        return redirect('/bahan')->with('status','Berhasil menghapus bahan <strong>'.$nama_bahan.'</strong>.')->with('kode', 1);
+        return redirect('/bahan')->with('status', 'Berhasil menghapus bahan <strong>' . $nama_bahan . '</strong>.')->with('kode', 1);
     }
     public function getDetailBahanPemakaian($id)
     {
-        $results = DB::select( DB::raw("SELECT * FROM detail_pemakaian_bahans  inner join bahan_labs  on detail_pemakaian_bahans.kode_bahan  = bahan_labs.kode_bahan  WHERE detail_pemakaian_bahans.kode_bahan ='$id'") );
+        $results = DB::select(DB::raw("SELECT * FROM detail_pemakaian_bahans  inner join bahan_labs  on detail_pemakaian_bahans.kode_bahan  = bahan_labs.kode_bahan  WHERE detail_pemakaian_bahans.kode_bahan ='$id'"));
         return view('bahan.detail-bahan', compact('results'));
     }
 }

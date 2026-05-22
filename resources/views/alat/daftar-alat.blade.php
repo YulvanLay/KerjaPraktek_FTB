@@ -74,6 +74,7 @@
             <td>{{ $alat->supplier?$alat->supplier->nama_supplier:'-' }}</td>
             @if(Auth()->user()->laboran)
             <td style="white-space: nowrap;">
+                <a class="btn btn-link" href="{{ action('AlatController@getDetailAlatPeminjaman', $alat->kode_alat) }}" title="Lihat Detail" aria-label="Lihat Detail"><i class="fas fa-list"></i></a>
                 <a class="btn btn-link" href="#" title="Ubah" aria-label="Ubah" data-toggle="modal" data-target="#modalEdit" onclick="showModalEdit('{{ $alat->kode_alat }}');"><i class="fas fa-edit"></i></a>
                 @if(!$alat->detailPembelianAlats()->exists() && !$alat->detailPinjam()->exists() && auth()->user()->hak_akses_delete)
                 <a class="btn btn-link" href="#" data-toggle="modal" data-target="#modalHapus" title="Hapus" aria-label="Hapus" onclick="updateModal('{{ $alat->nama_alat }}'); hapus('{{ $alat->kode_alat }}');"><i class="fas fa-trash-alt"></i></a>

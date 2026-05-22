@@ -73,8 +73,8 @@
                     </div>
                     <div class="form-group">
                         <label class="col-form-label" for="tanggal">Tanggal TTB :</label>
-                        <input type="text" class="form-control datepicker col-sm-6" id="tanggal" name="tanggal" data-provide="datepicker" required readonly>
-                        <input type="text" class="form-control datepicker" id="tgl_TTB" name="tgl_TTB" data-provide="datepicker" required readonly hidden>
+                        <input type="text" class="form-control datepicker" id="tgl_TTB" name="tgl_TTB" data-provide="datepicker" required readonly>
+                        <input type="text" class="form-control datepicker col-sm-6" id="tanggal" name="tanggal" data-provide="datepicker" required readonly hidden>
                         <span class="help-block">{{ $errors->first('tgl_TTB', ':message') }}</span>
                     </div>
                     <div class="form-group">

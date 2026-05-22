@@ -11,6 +11,7 @@ use App\Http\Requests\AlatStoreRequest;
 use App\Http\Requests\AlatUpdateRequest;
 use app\detailPinjam;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AlatController extends Controller
 {
@@ -30,13 +31,14 @@ class AlatController extends Controller
         //         LEFT JOIN supplier_alats on alat_labs.kode_supplier = supplier_alats.kode_supplier LEFT JOIN detail_peminjaman_alats on alat_labs.kode_alat = 
         //         detail_peminjaman_alats.kode_alat where alat_labs.stok > 0 or (detail_peminjaman_alats.jumlah - detail_peminjaman_alats.kembali) > 0 GROUP BY 
         //         alat_labs.kode_alat"));
-        if (auth()->user()->laboran && auth()->user()->laboran->kode_laboran == 213030) //Perlu diganti jika penanggung jawab diganti
-        {
+        if (auth()->user()->laboran && auth()->user()->laboran->user->aktif == 1) {
+            // Semua laboran aktif bisa melihat seluruh stok termasuk yang 0
             $alats = AlatLab::with('jenis')->with('merek')->with('supplier')->with('detailPinjam')->get();
             $jenisAlats = JenisAlat::get();
             $mereks = Merek::get();
             $suppliers = Supplier::get();
         } else {
+            // Pelanggan, koordinator, kalab hanya lihat stok > 0
             $alats = AlatLab::with('jenis')->with('merek')->with('supplier')->with('detailPinjam')->where('stok', '>', 0)->get();
             $jenisAlats = JenisAlat::get();
             $mereks = Merek::get();
@@ -65,7 +67,7 @@ class AlatController extends Controller
     public function store(AlatStoreRequest $request)
     {
         if (auth()->user()->aktif != 1) {
-         return back()->with('status', 'Laboran tidak aktif tidak bisa menambah alat.')->with('kode', 0);
+            return back()->with('status', 'Laboran tidak aktif tidak bisa menambah alat.')->with('kode', 0);
         }
         $last_id = AlatLab::orderBy('kode_alat', 'desc')->first()['kode_alat'];
         $last_id = (int) explode('A', $last_id)[1] + 1;
@@ -118,7 +120,7 @@ class AlatController extends Controller
     public function update(AlatUpdateRequest $request, $id)
     {
         if (auth()->user()->aktif != 1) {
-        return back()->with('status', 'Laboran tidak aktif tidak bisa update stok.')->with('kode', 0);
+            return back()->with('status', 'Laboran tidak aktif tidak bisa update stok.')->with('kode', 0);
         }
         $alat = AlatLab::find($id);
         $alat->nama_alat = $request->get('ubah_nama_alat');
@@ -142,7 +144,7 @@ class AlatController extends Controller
     public function destroy($id)
     {
         if (auth()->user()->aktif != 1) {
-           return back()->with('status', 'Laboran tidak aktif tidak bisa menghapus alat.') ->with('kode', 0);
+            return back()->with('status', 'Laboran tidak aktif tidak bisa menghapus alat.')->with('kode', 0);
         }
         $alat = AlatLab::find($id);
         $nama_alat = $alat->nama_alat;
@@ -154,5 +156,11 @@ class AlatController extends Controller
         }
 
         return redirect('/alat')->with('status', 'Berhasil menghapus alat <strong>' . $nama_alat . '</strong>.')->with('kode', 1);
+    }
+
+    public function getDetailAlatPeminjaman($id)
+    {
+        $results = DB::select( DB::raw("SELECT * FROM detail_peminjaman_alats inner join alat_labs on detail_peminjaman_alats.kode_alat = alat_labs.kode_alat WHERE detail_peminjaman_alats.kode_alat ='$id'") );
+        return view('alat.detail-alat', compact('results'));
     }
 }

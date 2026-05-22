@@ -1,23 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Pemakaian Bahan')
+@section('title', 'Detail Peminjaman Alat')
 
 @section('content')
     <div class="row">
         <div class="col-sm-6">
-            <a class="btn btn-link" href="{{ url('bahan') }}">
+            <a class="btn btn-link" href="{{ url('alat') }}">
                 < Kembali</a>
         </div>
     </div><br>
     <div class="row">
         <div class="col-sm-12">
             <h2>
-                Detail Pemakaian Bahan
-                {{ count($results) > 0 ? $results[0]->nama_bahan : '' }}
+                Detail Peminjaman Alat
+                {{ count($results) > 0 ? $results[0]->nama_alat : '' }}
             </h2>
         </div>
     </div><br>
-    <table id="tabel-pemakaian" class="datatable stripe hover row-border order-column cell-border" style="width:100%">
+    <table id="tabel-peminjaman" class="datatable stripe hover row-border order-column cell-border" style="width:100%">
         <thead>
             <tr>
                 <th>No Transaksi</th>
@@ -37,7 +37,7 @@
     <script type="text/javascript" src="{{ URL::asset('js/custom-data-table.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            var dt = $('.datatable').DataTable(tableOptions);
+            var dt = $('#tabel-peminjaman').DataTable(tableOptions);
         });
     </script>
 @endsection

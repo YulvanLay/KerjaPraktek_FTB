@@ -19,13 +19,15 @@ class DetailPenerimaanBahanController extends Controller
         //
     }
 
-    public function getInfoDetail($id){
+    public function getInfoDetail($id)
+    {
         $detail = DetailPenerimaanBahan::with('bahan')->find($id);
         return Response($detail);
     }
 
-    public function tambahDetail($noPO){
-        if(!auth()->user()->laboran)
+    public function tambahDetail($noPO)
+    {
+        if (!auth()->user()->laboran)
             return response()->view('errors.403');
 
         $bahans = BahanLab::get();
@@ -55,18 +57,17 @@ class DetailPenerimaanBahanController extends Controller
         $hargas = $request->get('harga');
         $noPO = $request->get('noPO');
 
-        for ($i=0; $i < count($bahans); $i++) { 
-            if($jumlahs[$i] == 0)
+        for ($i = 0; $i < count($bahans); $i++) {
+            if ($jumlahs[$i] == 0)
                 continue;
 
             $detail = DetailPenerimaanBahan::where('no_PO', $noPO)->where('kode_bahan', $bahans[$i])->first();
-            if(is_null($detail)){
+            if (is_null($detail)) {
                 $detail = new DetailPenerimaanBahan();
                 $detail->no_PO = $noPO;
                 $detail->kode_bahan = $bahans[$i];
                 $detail->jumlah = $jumlahs[$i];
-            }
-            else{
+            } else {
                 $detail->jumlah += $jumlahs[$i];
             }
             $detail->save();
@@ -77,7 +78,7 @@ class DetailPenerimaanBahanController extends Controller
             $bahan->save();
         }
 
-        return redirect('/terima-bahan-detail/'.$noPO)->with('status','Berhasil menambah bahan pada No PO <strong>'.$noPO.'</strong>.')->with('kode', 1);
+        return redirect('/terima-bahan-detail/' . $noPO)->with('status', 'Berhasil menambah bahan pada No PO <strong>' . $noPO . '</strong>.')->with('kode', 1);
     }
 
     /**
@@ -88,11 +89,18 @@ class DetailPenerimaanBahanController extends Controller
      */
     public function show($noPO)
     {
-        if(!auth()->user()->laboran && !auth()->user()->kalab && !auth()->user()->koordinator)
+        if (!auth()->user()->laboran && !auth()->user()->kalab && !auth()->user()->koordinator)
             return response()->view('errors.403');
-        
+
         // $details = DetailPenerimaanBahan::with('bahan')->where('no_PO', $noPO)->get();
         $penerimaan = PenerimaanBahan::find($noPO);
+
+        if (!$penerimaan) {
+            return redirect('/terima-bahan')
+                ->with('status', 'Data penerimaan bahan tidak ditemukan.')
+                ->with('kode', 0);
+        }
+
         foreach ($penerimaan->details as $detail) {
             $detail->jumlah = preg_replace("/\,?0+$/", "", number_format($detail->jumlah, 2, ',', '.'));
         }
@@ -124,8 +132,8 @@ class DetailPenerimaanBahanController extends Controller
 
         $detail = DetailPenerimaanBahan::find($id);
 
-        if($jumlahBaru <= 0 || $jumlahBaru == '')
-            return redirect('/terima-bahan-detail/'.$detail->no_PO)->with('status','Bahan yang dipakai tidak dapat kurang dari sama dengan 0.')->with('kode', 0);
+        if ($jumlahBaru <= 0 || $jumlahBaru == '')
+            return redirect('/terima-bahan-detail/' . $detail->no_PO)->with('status', 'Bahan yang dipakai tidak dapat kurang dari sama dengan 0.')->with('kode', 0);
 
         $jumlahLama = $detail->jumlah;
         $detail->jumlah = $jumlahBaru;
@@ -136,7 +144,7 @@ class DetailPenerimaanBahanController extends Controller
         $bahan->stok += $jumlahBaru;
         $bahan->save();
 
-        return redirect('/terima-bahan-detail/'.$detail->no_PO)->with('status','Berhasil memperbarui bahan <strong>'.$bahan->nama_bahan.'</strong>.')->with('kode', 1);
+        return redirect('/terima-bahan-detail/' . $detail->no_PO)->with('status', 'Berhasil memperbarui bahan <strong>' . $bahan->nama_bahan . '</strong>.')->with('kode', 1);
     }
 
     /**
@@ -156,6 +164,6 @@ class DetailPenerimaanBahanController extends Controller
 
         $detail->delete();
 
-        return redirect('/terima-bahan-detail/'.$detail->no_PO)->with('status','Berhasil menghapus bahan <strong>'.$bahan->nama_bahan.'</strong>.')->with('kode', 1);
+        return redirect('/terima-bahan-detail/' . $detail->no_PO)->with('status', 'Berhasil menghapus bahan <strong>' . $bahan->nama_bahan . '</strong>.')->with('kode', 1);
     }
 }

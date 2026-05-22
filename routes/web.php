@@ -27,6 +27,7 @@ Route::post('/change-password', 'HomeController@changePassword')->name('change-p
 //Alat
 Route::post('alat/tambah-alat', 'AlatController@store')->name('Alat.store');
 Route::post('/alat/{id}/update', 'AlatController@update')->name('Alat.update');
+Route::get('/alat/{id}/detail', 'AlatController@getDetailAlatPeminjaman')->name('alat.getDetailAlatPeminjaman');
 Route::resource('alat', 'AlatController');
 
 //Peminjaman Alat
@@ -229,7 +230,7 @@ Route::prefix('lainnya')->name('lainnya.')->group(function () {
 	Route::post('pelanggan/tambah-pelanggan', 'PelangganController@store')->name('Pelanggan.store');
 	Route::get('/pelanggan/{id}', 'PelangganController@show');
 	Route::get('/pelanggan/{id}/edit', 'PelangganController@edit');
-	Route::post('/pelanggan/{id}/update', 'PelangganController@update')->name('PelaFlognggan.update');
+	Route::post('/pelanggan/{id}/update', 'PelangganController@update')->name('Pelanggan.update');
 	Route::resource('pelanggan', 'PelangganController');
 
 	//Periode
