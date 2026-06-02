@@ -57,7 +57,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'sistem@simlabftb.top'),
-        'name' => env('MAIL_FROM_NAME', 'INVENTORY SIMLABFTB'),
+        'name' => env('MAIL_FROM_NAME', 'Simlab FTB'),
     ],
 
     /*

@@ -25,16 +25,18 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-key"></i></span>
                     </div>
-                    <input id="password" type="password" placeholder="Kata Sandi" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required oninvalid="this.setCustomValidity('Kata sandi harus diisi')" oninput="setCustomValidity('')">   
+                    <input id="password" type="password" placeholder="Kata Sandi" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required oninvalid="this.setCustomValidity('Kata sandi harus diisi')" oninput="setCustomValidity('')">
                 </div>
                 <div class="dropdown-divider form-group"></div>
-                
+
                 <div class="input-group form-group">
                     <button type="submit" class="btn btn-primary float-right">Masuk</button>
                 </div>
-                
-                
-            
+
+                <div class="text-center">
+                    <a href="/forgot-password" style="font-size:0.82rem; color:#6b7c72;">Lupa kata sandi?</a>
+                </div>
+
             </form>
         </div>
     </div>

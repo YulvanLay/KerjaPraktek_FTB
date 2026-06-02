@@ -24,6 +24,12 @@ Route::get('/', 'HomeController@index')->name('home');
 Route::get('/change-password', 'HomeController@showChangePasswordForm');
 Route::post('/change-password', 'HomeController@changePassword')->name('change-password');
 
+// ── Reset Password ──
+Route::get('/forgot-password', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+Route::post('/forgot-password', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+Route::get('/reset-password/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+Route::post('/reset-password', 'Auth\ResetPasswordController@reset')->name('password.update');
+
 //Alat
 Route::post('alat/tambah-alat', 'AlatController@store')->name('Alat.store');
 Route::post('/alat/{id}/update', 'AlatController@update')->name('Alat.update');
