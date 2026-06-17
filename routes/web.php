@@ -60,7 +60,8 @@ Route::resource('pinjam-alat-detail', 'DetailPeminjamanAlatController');
 Route::post('pinjam-alat/updatedata', 'DetailPeminjamanAlatController@updatedata')->name('DetailPeminjamanAlat.updateData');
 Route::post('pinjam-alat/updatedataverif', 'DetailPeminjamanAlatController@updatedataverif')->name('DetailPeminjamanAlat.updateDataVerif');
 Route::post('/kembali-alat/kembali', 'DetailPeminjamanAlatController@kembali2')->name('DetailPeminjamanAlat.kembali2');
-
+Route::get('/pinjam-alat-detail/{id}/edit', 'DetailPeminjamanAlatController@edit')->where('id', '(.*)')->name('DetailPeminjamanAlat.edit');
+Route::delete('/pinjam-alat-detail/hapus-detail/{id}', 'DetailPeminjamanAlatController@destroy')->name('DetailPeminjamanAlat.destroy');
 Route::delete('/hapus-riwayat/{id}', 'DetailPengembalianAlatController@destroy');
 
 //Bahan
@@ -133,15 +134,14 @@ Route::get('terima-bahan', 'PenerimaanBahanController@index');
 //Detail Penerimaan Bahan
 Route::get('terima-bahan-detail/get-info-detail/{id}', 'DetailPenerimaanBahanController@getInfoDetail');
 Route::get('terima-bahan-detail/tambah-detail/{id}', 'DetailPenerimaanBahanController@tambahDetail')->where('id', '(.*)');
-Route::get('terima-bahan-detail/{noPO}', 'DetailPenerimaanBahanController@show')->where('noPO', '(.*)');
-Route::get('terima-bahan-detail/tambah', 'DetailPenerimaanBahanController@create');
+Route::get('terima-bahan-detail/tambah', 'DetailPenerimaanBahanController@create');         // ← naik ke atas
 Route::post('terima-bahan-detail/tambah', 'DetailPenerimaanBahanController@store')->name('DetailPenerimaanBahan.store');
-Route::get('/terima-bahan-detail/{id}/edit', 'DetailPenerimaanBahanController@edit');
+Route::get('/terima-bahan-detail/{id}/edit', 'DetailPenerimaanBahanController@edit')->name('DetailPenerimaanBahan.edit'); // ← gabung jadi 1
 Route::post('/terima-bahan-detail/{id}/update', 'DetailPenerimaanBahanController@update')->name('DetailPenerimaanBahan.update');
 Route::delete('terima-bahan-detail/hapus-detail/{id}', 'DetailPenerimaanBahanController@destroy');
 Route::get('terima-bahan-detail', 'DetailPenerimaanBahanController@index');
+Route::get('terima-bahan-detail/{noPO}', 'DetailPenerimaanBahanController@show')->where('noPO', '(.*)');
 // Route::resource('terima-bahan-detail', 'DetailPenerimaanBahanController');
-
 //Laporan Pemakaian Alat
 Route::get('laporan-peminjaman-alat/', 'PeminjamanAlatController@laporan');
 Route::get('invoice-peminjaman-alat/{pelanggan}/{keperluan}/{periode}', 'PeminjamanAlatController@invoicePeminjaman')->name('PeminjamanAlat.invoice');
