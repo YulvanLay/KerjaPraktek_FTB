@@ -156,6 +156,17 @@ Route::get('accKalab/alat/{id}/{pelanggan}/{keperluan}/{periode}', 'PeminjamanAl
 Route::get('laporan-pemakaian-bahan/', 'PemakaianBahanController@laporan');
 Route::get('laporan-pemakaian-bahan/laporanku', 'PemakaianBahanController@laporanku');
 
+//Bebas Laboratorium
+Route::get('bebas-lab/', 'BebasLaboratoriumController@laporan');
+Route::get('/bebas-lab/{kode_pelanggan}', 'BebasLaboratoriumController@getByPelanggan');
+Route::get('/bebas-lab/detail/{id}', 'BebasLaboratoriumController@getDetail');
+Route::get('/bebas-lab-preview/{id}', 'BebasLaboratoriumController@showPreview');
+Route::post('/bebas-lab/update-checklist', 'BebasLaboratoriumController@updateChecklist');
+Route::post('/bebas-lab/acc-laboran', 'BebasLaboratoriumController@accLaboran');
+Route::post('/bebas-lab/batal-acc-laboran', 'BebasLaboratoriumController@batalAccLaboran');
+Route::post('/bebas-lab/acc-kalab', 'BebasLaboratoriumController@accKalab');
+Route::get('form-bebas-lab/{kodePelanggan}/{namaLab}', 'BebasLaboratoriumController@cetak');
+
 Route::get('pemakaian-bahan/{id}/{tglmulai}/{tglakhir}', 'PemakaianBahanController@show');
 Route::get('pemakaian-bahan/pernota/{id}/{tglmulai}/{tglakhir}', 'PemakaianBahanController@showPernota');
 Route::get('accLaboran/{id}', 'PemakaianBahanController@AccLaboran')->where('id', '(.*)');
