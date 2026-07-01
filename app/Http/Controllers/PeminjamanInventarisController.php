@@ -115,11 +115,11 @@ class PeminjamanInventarisController extends Controller
             if ($exceedLimit)
                 return redirect('/pinjam-inventaris/tambah')->with('status', 'Jumlah inventaris yang dipinjam tidak dapat melebihi jumlah yang tersedia')->with('kode', 0)->withInput();
 
-            $last_id = PeminjamanInventaris::orderBy('no_transaksi', 'desc')->first()['no_transaksi'];
+            $last_id = PeminjamanInventaris::orderBy('no_transaksi', 'desc')->first();
             if (is_null($last_id)) {
                 $last_id = 1;
             } else {
-                $last_id = (int) explode('PI/', $last_id)[1] + 1;
+                $last_id = (int) explode('PI/', $last_id->no_transaksi)[1] + 1;
             }
             $next_id = 'PI/' . sprintf("%08s", $last_id);
 
@@ -268,6 +268,17 @@ class PeminjamanInventarisController extends Controller
         });
     }
 
+    /**
+     * NOTE: Untuk fitur cetak invoice PDF (invoicePeminjaman) dan kirim email
+     * notifikasi (SendEmailinvoicePemakaian), silakan duplikasi method yang
+     * sama pada PeminjamanAlatController dan sesuaikan nama tabel/relasi:
+     *   - alat_labs        -> inventaris_labs
+     *   - detail_peminjaman_alats -> detail_peminjaman_inventaris
+     *   - peminjaman_alats -> peminjaman_inventaris
+     * serta buat view baru di resources/views/laporan/invoice-peminjaman-inventaris.blade.php
+     * dan resources/views/peminjaman-inventaris/mailinvoice.blade.php
+     * berdasarkan view invoice-peminjaman-alat & peminjaman-alat/mailinvoice.
+     */
     public function previewPeminjaman($pelanggan, $keperluan, $periode)
     {
         if (!auth()->user()->laboran && !auth()->user()->koordinator && !auth()->user()->kalab)
@@ -418,5 +429,53 @@ class PeminjamanInventarisController extends Controller
         $this->SendEmailinvoicePemakaian($pelanggan, $keperluan, $periode);
 
         return redirect('/inventaris-tidakterpakai')->with('status', 'Berhasil memverifikasi no transaksi <strong>' . $id . '</strong>.')->with('kode', 1);
+    }
+    public function cekstok(Request $request)
+    {
+        $kode_inventaris = $request->kode_inventaris;
+        $value = $request->value;
+        $inventaris = InventarisLab::find($kode_inventaris);
+        if ($value > $inventaris->jumlah) {
+            return response()->json(array(
+                'status' => 'lebih',
+                'msg' => 'Jumlah kelebihan'
+            ), 200);
+        } else {
+            return response()->json(array(
+                'status' => 'cukup',
+                'msg' => 'Jumlah masih cukup'
+            ), 200);
+        }
+    }
+
+    public function indexUsulanSemua()
+    {
+        if (!auth()->user()->laboran && !auth()->user()->koordinator && !auth()->user()->kalab) {
+            $pelanggans = Pelanggan::get();
+            $keperluans = Keperluan::get();
+            $periodes = Periode::orderBy('id_periode', 'desc')->get();
+            $peminjamans = PeminjamanInventaris::with(['laboran', 'keperluan', 'pelanggan', 'periode'])->where('kode_pelanggan', auth()->user()->pelanggan->kode_pelanggan)->get();
+            $detailpeminjamans = DB::select(DB::raw('SELECT no_transaksi,sum(jumlah_usulan) as jumlah, sum(kembali) as kembali FROM detail_peminjaman_inventaris GROUP BY no_transaksi'));
+            return response()->json([
+                'peminjamans' => $peminjamans,
+                'pelanggans' => $pelanggans,
+                'keperluans' => $keperluans,
+                'periodes' => $periodes,
+                'detailpeminjamans' => $detailpeminjamans
+            ]);
+        }
+
+        $pelanggans = Pelanggan::get();
+        $keperluans = Keperluan::get();
+        $periodes = Periode::orderBy('id_periode', 'desc')->get();
+        $peminjamans = PeminjamanInventaris::with(['laboran', 'keperluan', 'pelanggan', 'periode'])->get();
+        $detailpeminjamans = DB::select(DB::raw('SELECT no_transaksi,sum(jumlah_usulan) as jumlah, sum(kembali) as kembali FROM detail_peminjaman_inventaris GROUP BY no_transaksi'));
+        return response()->json([
+            'peminjamans' => $peminjamans,
+            'pelanggans' => $pelanggans,
+            'keperluans' => $keperluans,
+            'periodes' => $periodes,
+            'detailpeminjamans' => $detailpeminjamans
+        ]);
     }
 }

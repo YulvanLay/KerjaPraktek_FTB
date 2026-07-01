@@ -3,23 +3,6 @@
 @section('title', 'Peminjaman Inventaris')
 
 @section('content')
-    @if(session('status'))
-        @if(session('kode') == 1)
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {!! session('status') !!}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @elseif(session('kode') == 0)
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {!! session('status') !!}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-    @endif
     <div class="row">
         <div class="col-sm-6">
             <h2>Peminjaman Inventaris <span><small></small></span></h2>

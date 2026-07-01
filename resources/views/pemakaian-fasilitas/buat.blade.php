@@ -120,7 +120,7 @@
         function tbganti(value, id) {
             $x = id.split("_");
             var kode_fasilitas = $("#fasilitas_" + $x[1]).val();
-            $.post('{{route("Fasilitas.cekstok")}}',
+            $.post('{{route("PemakaianFasilitas.cekstok")}}',
                 {
                     _token: "<?php echo csrf_token() ?>",
                     kode_fasilitas: kode_fasilitas,

@@ -176,7 +176,7 @@
         function tbganti(value, id) {
             $x = id.split("_");
             var kode_inventaris = $("#inventaris_" + $x[1]).val();
-            $.post('{{route("Inventaris.cekjumlah")}}',
+            $.post('{{route("PeminjamanInventaris.cekstok")}}',
                 {
                     _token: "<?php echo csrf_token() ?>",
                     kode_inventaris: kode_inventaris,

@@ -86,7 +86,6 @@ class InventarisController extends Controller
         $inventaris->kode_sumber_dana = $request->get('sumber_dana');
         $inventaris->no_inventaris = $request->get('no_inventaris');
         $inventaris->ruangan = $request->get('ruangan');
-        $inventaris->keterangan = $request->get('keterangan');
         $inventaris->kode_laboratorium = $request->get('kode_laboratorium');
         $inventaris->save();
 
@@ -142,7 +141,6 @@ class InventarisController extends Controller
         $inventaris->kode_sumber_dana = $request->get('ubah_sumber_dana');
         $inventaris->no_inventaris = $request->get('ubah_no_inventaris');
         $inventaris->ruangan = $request->get('ubah_ruangan');
-        $inventaris->keterangan = $request->get('ubah_keterangan');
         $inventaris->kode_laboratorium = $request->get('ubah_kode_laboratorium');
         $inventaris->save();
 
@@ -214,21 +212,4 @@ class InventarisController extends Controller
         return view('inventaris.detail-inventaris', compact('results'));
     }
 
-    public function cekjumlah(Request $request)
-    {
-        $kode_inventaris = $request->kode_inventaris;
-        $value = $request->value;
-        $inventaris = InventarisLab::find($kode_inventaris);
-        if ($value > $inventaris->jumlah) {
-            return response()->json(array(
-                'status' => 'lebih',
-                'msg' => 'Jumlah kelebihan'
-            ), 200);
-        } else {
-            return response()->json(array(
-                'status' => 'cukup',
-                'msg' => 'Jumlah masih cukup'
-            ), 200);
-        }
-    }
 }

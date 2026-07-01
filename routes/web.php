@@ -69,7 +69,7 @@ Route::delete('/hapus-riwayat/{id}', 'DetailPengembalianAlatController@destroy')
 Route::post('inventaris/tambah-inventaris', 'InventarisController@store')->name('Inventaris.store');
 Route::post('/inventaris/{id}/update', 'InventarisController@update')->name('Inventaris.update');
 Route::get('/inventaris/{id}/detail', 'InventarisController@getDetailInventarisPeminjaman')->name('inventaris.getDetailInventarisPeminjaman');
-Route::post('/inventaris/cekjumlah', 'InventarisController@cekjumlah')->name('Inventaris.cekjumlah');
+Route::post('/pinjam-inventaris/cekstok', 'PeminjamanInventarisController@cekstok')->name('PeminjamanInventaris.cekstok');
 Route::resource('inventaris', 'InventarisController');
 
 // Merek & Supplier Inventaris (modal tambah baru dari form Inventaris)
@@ -83,6 +83,7 @@ Route::post('/pinjam-inventaris/{id}/update', 'PeminjamanInventarisController@up
 Route::delete('/pinjam-inventaris/{id}', 'PeminjamanInventarisController@destroy')->where('id', '(.*)');
 Route::get('pinjam-inventaris', 'PeminjamanInventarisController@index');
 Route::get('pinjam-inventaris/usulanku', 'PeminjamanInventarisController@indexUsulanku')->name('PeminjamanInventaris.indexUsulanku');
+Route::get('pinjam-inventaris/usulan-semua', 'PeminjamanInventarisController@indexUsulanSemua')->name('PeminjamanInventaris.indexUsulanSemua');
 Route::get('/pinjam-inventaris/{id}', 'PeminjamanInventarisController@getInfo')->where('id', '(.*)');
 
 // Detail Peminjaman Inventaris
@@ -117,7 +118,7 @@ Route::get('verifikasiLaboran/inventaris/{id}/{kode_inventaris}', 'PeminjamanInv
 Route::post('fasilitas/tambah-fasilitas', 'FasilitasController@store')->name('Fasilitas.store');
 Route::post('/fasilitas/{id}/update', 'FasilitasController@update')->name('Fasilitas.update');
 Route::get('/fasilitas/{id}/detail', 'FasilitasController@getDetailFasilitasPemakaian')->name('fasilitas.getDetailFasilitasPemakaian');
-Route::post('/fasilitas/cekstok', 'FasilitasController@cekstok')->name('Fasilitas.cekstok');
+Route::post('/pakai-fasilitas/cekstok', 'PemakaianFasilitasController@cekstok')->name('PemakaianFasilitas.cekstok');
 Route::resource('fasilitas', 'FasilitasController');
 
 // Pemakaian Fasilitas
@@ -128,6 +129,7 @@ Route::post('/pakai-fasilitas/{id}/update', 'PemakaianFasilitasController@update
 Route::delete('/pakai-fasilitas/{id}', 'PemakaianFasilitasController@destroy')->where('id', '(.*)');
 Route::get('pakai-fasilitas', 'PemakaianFasilitasController@index');
 Route::get('usulan-pemakaian-fasilitas', 'PemakaianFasilitasController@indexUsulanku')->name('PemakaianFasilitas.indexUsulanku');
+Route::get('semua-pemakaian-fasilitas', 'PemakaianFasilitasController@indexUsulanSemua')->name('PemakaianFasilitas.indexUsulanSemua');
 
 // Detail Pemakaian Fasilitas
 Route::get('/pakai-fasilitas-detail/get-info-detail/{id}', 'DetailPemakaianFasilitasController@getInfo');

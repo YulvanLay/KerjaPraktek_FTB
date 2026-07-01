@@ -141,22 +141,4 @@ class FasilitasController extends Controller
         $results = DB::select(DB::raw("SELECT * FROM detail_pemakaian_fasilitas inner join fasilitas_labs on detail_pemakaian_fasilitas.kode_fasilitas = fasilitas_labs.kode_fasilitas WHERE detail_pemakaian_fasilitas.kode_fasilitas ='$id'"));
         return view('fasilitas.detail-fasilitas', compact('results'));
     }
-
-    public function cekstok(Request $request)
-    {
-        $kode_fasilitas = $request->kode_fasilitas;
-        $value = $request->value;
-        $fasilitas = FasilitasLab::find($kode_fasilitas);
-        if ($value > $fasilitas->stok) {
-            return response()->json(array(
-                'status' => 'lebih',
-                'msg' => 'Jumlah kelebihan'
-            ), 200);
-        } else {
-            return response()->json(array(
-                'status' => 'cukup',
-                'msg' => 'Stok masih cukup'
-            ), 200);
-        }
-    }
 }

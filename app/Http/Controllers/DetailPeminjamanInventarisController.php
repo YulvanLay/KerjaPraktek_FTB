@@ -191,15 +191,19 @@ class DetailPeminjamanInventarisController extends Controller
                 ->where('kode_inventaris', '=', $kode)
                 ->value('jumlah_usulan');
 
+            $updateJumlahAcc = DB::table('detail_peminjaman_inventaris')
+                ->where('no_transaksi', '=', $no_transaksi)
+                ->where('kode_inventaris', '=', $kode)
+                ->update(['jumlah' => $jumlahUsulan]);
+
+            if (is_null($updateJumlahAcc)) {
+                return redirect('/pinjam-inventaris-detail/' . $no_transaksi)->with('status', 'Gagal memverifikasi usulan.')->with('kode', 0);
+            }
+
             $inventaris = InventarisLab::find($kode);
 
             if ($inventaris->jumlah < $jumlahUsulan)
                 return redirect('/pinjam-inventaris-detail/' . $no_transaksi)->with('status', 'Inventaris yang dipinjam tidak dapat melebihi jumlah yang tersedia.')->with('kode', 0);
-
-            DB::table('detail_peminjaman_inventaris')
-                ->where('no_transaksi', '=', $no_transaksi)
-                ->where('kode_inventaris', '=', $kode)
-                ->update(['jumlah' => $jumlahUsulan]);
 
             $inventaris->jumlah -= $jumlahUsulan;
             $inventaris->save();
@@ -227,12 +231,22 @@ class DetailPeminjamanInventarisController extends Controller
         }
         $peminjaman_inventaris->save();
 
-        $arr_nama = [];
-        foreach ($kode_inventaris as $kode) {
-            $arr_nama[] = InventarisLab::find($kode)->nama_inventaris;
+        $arr_nama = "";
+        $total = count($kode_inventaris);
+        $last = $total - 1;
+        foreach ($kode_inventaris as $key => $value) {
+            if (count($kode_inventaris) > 1) {
+                $inventaris = InventarisLab::find($value);
+                $arr_nama .= $inventaris->nama_inventaris;
+                if ($key != $last) {
+                    $arr_nama .= " , ";
+                }
+            } else {
+                $arr_nama .= $inventaris->nama_inventaris;
+            }
         }
 
-        return redirect('/pinjam-inventaris-detail/' . $no_transaksi)->with('status', 'Berhasil verifikasi inventaris <strong>' . implode(', ', $arr_nama) . '</strong>.')->with('kode', 1);
+        return redirect('/pinjam-inventaris-detail/' . $no_transaksi)->with('status', 'Berhasil verifikasi inventaris <strong>' . $arr_nama . '</strong>.')->with('kode', 1);
     }
 
     /**

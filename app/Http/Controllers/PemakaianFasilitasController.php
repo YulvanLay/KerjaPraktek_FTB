@@ -115,11 +115,11 @@ class PemakaianFasilitasController extends Controller
         if ($exceedLimit)
             return redirect('/pakai-fasilitas/tambah')->with('status', 'Jumlah fasilitas yang dipakai tidak dapat melebihi stok yang tersedia')->with('kode', 0)->withInput();
 
-        $last_id = PemakaianFasilitas::orderBy('no_transaksi', 'desc')->first()['no_transaksi'];
+        $last_id = PemakaianFasilitas::orderBy('no_transaksi', 'desc')->first();
         if (is_null($last_id)) {
             $last_id = 1;
         } else {
-            $last_id = (int) explode('PF/', $last_id)[1] + 1;
+            $last_id = (int) explode('PF/', $last_id->no_transaksi)[1] + 1;
         }
         $next_id = 'PF/' . sprintf("%08s", $last_id);
 
@@ -395,5 +395,53 @@ class PemakaianFasilitasController extends Controller
         $this->SendEmailinvoicePemakaian($pelanggan, $keperluan, $periode);
 
         return redirect('/fasilitas-tidakterpakai')->with('status', 'Berhasil memverifikasi no transaksi <strong>' . $id . '</strong>.')->with('kode', 1);
+    }
+    public function cekstok(Request $request)
+    {
+        $kode_fasilitas = $request->kode_fasilitas;
+        $value = $request->value;
+        $fasilitas = FasilitasLab::find($kode_fasilitas);
+        if ($value > $fasilitas->stok) {
+            return response()->json(array(
+                'status' => 'lebih',
+                'msg' => 'Jumlah kelebihan'
+            ), 200);
+        } else {
+            return response()->json(array(
+                'status' => 'cukup',
+                'msg' => 'Stok masih cukup'
+            ), 200);
+        }
+    }
+
+    public function indexUsulanSemua()
+    {
+        if (!auth()->user()->laboran && !auth()->user()->koordinator && !auth()->user()->kalab) {
+            $pelanggans = Pelanggan::get();
+            $keperluans = Keperluan::get();
+            $periodes = Periode::orderBy('id_periode', 'desc')->get();
+            $pemakaians = PemakaianFasilitas::with(['laboran', 'keperluan', 'pelanggan', 'periode'])->where('kode_pelanggan', auth()->user()->pelanggan->kode_pelanggan)->get();
+            $detailpemakaians = DB::select(DB::raw('SELECT no_transaksi,sum(jumlah_usulan) as jumlah, sum(kembali) as kembali FROM detail_pemakaian_fasilitas GROUP BY no_transaksi'));
+            return response()->json([
+                'pemakaians' => $pemakaians,
+                'pelanggans' => $pelanggans,
+                'keperluans' => $keperluans,
+                'periodes' => $periodes,
+                'detailpemakaians' => $detailpemakaians
+            ]);
+        }
+
+        $pelanggans = Pelanggan::get();
+        $keperluans = Keperluan::get();
+        $periodes = Periode::orderBy('id_periode', 'desc')->get();
+        $pemakaians = PemakaianFasilitas::with(['laboran', 'keperluan', 'pelanggan', 'periode'])->get();
+        $detailpemakaians = DB::select(DB::raw('SELECT no_transaksi,sum(jumlah_usulan) as jumlah, sum(kembali) as kembali FROM detail_pemakaian_fasilitas GROUP BY no_transaksi'));
+        return response()->json([
+            'pemakaians' => $pemakaians,
+            'pelanggans' => $pelanggans,
+            'keperluans' => $keperluans,
+            'periodes' => $periodes,
+            'detailpemakaians' => $detailpemakaians
+        ]);
     }
 }
