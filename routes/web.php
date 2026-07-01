@@ -63,6 +63,101 @@ Route::post('/kembali-alat/kembali', 'DetailPeminjamanAlatController@kembali2')-
 
 Route::delete('/hapus-riwayat/{id}', 'DetailPengembalianAlatController@destroy');
 
+/* --- Tambahan Menu Inventaris & Fasilitas Lab --- */
+// Inventaris
+Route::post('inventaris/tambah-inventaris', 'InventarisController@store')->name('Inventaris.store');
+Route::post('/inventaris/{id}/update', 'InventarisController@update')->name('Inventaris.update');
+Route::get('/inventaris/{id}/detail', 'InventarisController@getDetailInventarisPeminjaman')->name('inventaris.getDetailInventarisPeminjaman');
+Route::post('/inventaris/cekjumlah', 'InventarisController@cekjumlah')->name('Inventaris.cekjumlah');
+Route::resource('inventaris', 'InventarisController');
+
+// Merek & Supplier Inventaris (modal tambah baru dari form Inventaris)
+Route::post('inventaris/tambah-merek', 'InventarisController@storeMerek')->name('Inventaris.storeMerek');
+Route::post('inventaris/tambah-supplier', 'InventarisController@storeSupplier')->name('Inventaris.storeSupplier');
+
+// Peminjaman Inventaris
+Route::get('pinjam-inventaris/tambah', 'PeminjamanInventarisController@create');
+Route::post('pinjam-inventaris/tambah', 'PeminjamanInventarisController@store')->name('PeminjamanInventaris.store');
+Route::post('/pinjam-inventaris/{id}/update', 'PeminjamanInventarisController@update')->where('id', '(.*)')->name('PeminjamanInventaris.update');
+Route::delete('/pinjam-inventaris/{id}', 'PeminjamanInventarisController@destroy')->where('id', '(.*)');
+Route::get('pinjam-inventaris', 'PeminjamanInventarisController@index');
+Route::get('pinjam-inventaris/usulanku', 'PeminjamanInventarisController@indexUsulanku')->name('PeminjamanInventaris.indexUsulanku');
+Route::get('/pinjam-inventaris/{id}', 'PeminjamanInventarisController@getInfo')->where('id', '(.*)');
+
+// Detail Peminjaman Inventaris
+Route::get('pinjam-inventaris-detail/tambah-detail/{id}', 'DetailPeminjamanInventarisController@tambahDetail')->where('id', '(.*)');
+Route::get('pinjam-inventaris-detail/{id}/getinfo', 'DetailPeminjamanInventarisController@getInfo')->where('id', '(.*)');
+Route::get('pinjam-inventaris-detail/{id}', 'DetailPeminjamanInventarisController@show')->where('id', '(.*)');
+Route::post('pinjam-inventaris-detail/tambah', 'DetailPeminjamanInventarisController@store')->name('DetailPeminjamanInventaris.store');
+Route::post('/pinjam-inventaris-detail/{id}/update', 'DetailPeminjamanInventarisController@update')->name('DetailPeminjamanInventaris.update');
+Route::post('/pinjam-inventaris-detail/updateBanyakData', 'DetailPeminjamanInventarisController@updateBanyakData')->name('DetailPeminjamanInventaris.updateBanyakData');
+Route::post('pinjam-inventaris-detail/updatedata', 'DetailPeminjamanInventarisController@updatedata')->name('DetailPeminjamanInventaris.updateData');
+Route::post('pinjam-inventaris-detail/updatedataverif', 'DetailPeminjamanInventarisController@updatedataverif')->name('DetailPeminjamanInventaris.updateDataVerif');
+Route::resource('pinjam-inventaris-detail', 'DetailPeminjamanInventarisController');
+
+// Pengembalian Inventaris
+Route::post('/kembali-inventaris/{id}/kembali', 'DetailPeminjamanInventarisController@kembali')->name('DetailPeminjamanInventaris.kembali');
+Route::post('/kembali-inventaris/kembaliBanyakData', 'DetailPeminjamanInventarisController@kembaliBanyakData')->name('DetailPeminjamanInventaris.kembaliBanyakData');
+Route::post('/kembali-inventaris/kembali', 'DetailPeminjamanInventarisController@kembali2')->name('DetailPeminjamanInventaris.kembali2');
+Route::delete('/hapus-riwayat-inventaris/{id}', 'DetailPengembalianInventarisController@destroy');
+
+// Laporan, Invoice, Preview, Verifikasi (Peminjaman Inventaris)
+Route::get('laporan-peminjaman-inventaris', 'PeminjamanInventarisController@laporan');
+Route::get('peminjaman-inventaris/{id}', 'PeminjamanInventarisController@show')->where('id', '(.*)');
+Route::get('invoice-peminjaman-inventaris/{pelanggan}/{keperluan}/{periode}', 'PeminjamanInventarisController@invoicePeminjaman')->name('PeminjamanInventaris.invoice');
+Route::get('preview-peminjaman-inventaris/{pelanggan}/{keperluan}/{periode}', 'PeminjamanInventarisController@previewPeminjaman')->name('PeminjamanInventaris.preview');
+Route::get('inventaris-tidakterpakai', 'PeminjamanInventarisController@inventarisTidakTerpakai');
+Route::get('accLaboran/inventaris/{id}', 'PeminjamanInventarisController@AccLaboran')->where('id', '(.*)');
+Route::get('accKoordinator/inventaris/{id}/{pelanggan}/{keperluan}/{periode}', 'PeminjamanInventarisController@AccKoordinator')->where('id', '(.*)');
+Route::get('accKalab/inventaris/{id}/{pelanggan}/{keperluan}/{periode}', 'PeminjamanInventarisController@AccKalab')->where('id', '(.*)');
+Route::get('verifikasiLaboran/inventaris/{id}/{kode_inventaris}', 'PeminjamanInventarisController@VerifikasiLaboran')->where('id', '(.*)');
+
+// Fasilitas
+Route::post('fasilitas/tambah-fasilitas', 'FasilitasController@store')->name('Fasilitas.store');
+Route::post('/fasilitas/{id}/update', 'FasilitasController@update')->name('Fasilitas.update');
+Route::get('/fasilitas/{id}/detail', 'FasilitasController@getDetailFasilitasPemakaian')->name('fasilitas.getDetailFasilitasPemakaian');
+Route::post('/fasilitas/cekstok', 'FasilitasController@cekstok')->name('Fasilitas.cekstok');
+Route::resource('fasilitas', 'FasilitasController');
+
+// Pemakaian Fasilitas
+Route::get('pakai-fasilitas/tambah', 'PemakaianFasilitasController@create');
+Route::post('pakai-fasilitas/tambah', 'PemakaianFasilitasController@store')->name('PemakaianFasilitas.store');
+Route::get('/pakai-fasilitas/{id}', 'PemakaianFasilitasController@getInfo')->where('id', '(.*)');
+Route::post('/pakai-fasilitas/{id}/update', 'PemakaianFasilitasController@update')->where('id', '(.*)')->name('PemakaianFasilitas.update');
+Route::delete('/pakai-fasilitas/{id}', 'PemakaianFasilitasController@destroy')->where('id', '(.*)');
+Route::get('pakai-fasilitas', 'PemakaianFasilitasController@index');
+Route::get('usulan-pemakaian-fasilitas', 'PemakaianFasilitasController@indexUsulanku')->name('PemakaianFasilitas.indexUsulanku');
+
+// Detail Pemakaian Fasilitas
+Route::get('/pakai-fasilitas-detail/get-info-detail/{id}', 'DetailPemakaianFasilitasController@getInfo');
+Route::get('pakai-fasilitas-detail/tambah-detail/{id}', 'DetailPemakaianFasilitasController@tambahDetail')->where('id', '(.*)');
+Route::get('pakai-fasilitas-detail/{id}', 'DetailPemakaianFasilitasController@show')->where('id', '(.*)');
+Route::post('pakai-fasilitas-detail/tambah-detail', 'DetailPemakaianFasilitasController@store')->name('DetailPemakaianFasilitas.store');
+Route::post('/pakai-fasilitas-detail/detail/{id}/update', 'DetailPemakaianFasilitasController@update')->name('DetailPemakaianFasilitas.update');
+Route::post('/pakai-fasilitas-detail/updateBanyakData', 'DetailPemakaianFasilitasController@updateBanyakData')->name('DetailPemakaianFasilitas.updateBanyakData');
+Route::post('/pakai-fasilitas-detail/updatedata', 'DetailPemakaianFasilitasController@updatedata')->name('DetailPemakaianFasilitas.updateData');
+Route::post('/pakai-fasilitas-detail/updatedataverif', 'DetailPemakaianFasilitasController@updatedataverif')->name('DetailPemakaianFasilitas.updateDataVerif');
+Route::delete('/pakai-fasilitas-detail/hapus-detail/{id}', 'DetailPemakaianFasilitasController@destroy');
+Route::get('pakai-fasilitas-detail/detail', 'DetailPemakaianFasilitasController@index');
+
+// Pengembalian Fasilitas
+Route::post('/kembali-fasilitas/{id}/kembali', 'DetailPemakaianFasilitasController@kembali')->name('DetailPemakaianFasilitas.kembali');
+Route::post('/kembali-fasilitas/kembaliBanyakData', 'DetailPemakaianFasilitasController@kembaliBanyakData')->name('DetailPemakaianFasilitas.kembaliBanyakData');
+Route::post('/kembali-fasilitas/kembali', 'DetailPemakaianFasilitasController@kembali2')->name('DetailPemakaianFasilitas.kembali2');
+Route::delete('/hapus-riwayat-fasilitas/{id}', 'DetailPengembalianFasilitasController@destroy');
+
+// Laporan, Invoice, Preview, Acc (Pemakaian Fasilitas)
+Route::get('laporan-pemakaian-fasilitas', 'PemakaianFasilitasController@laporan');
+Route::get('pemakaian-fasilitas/{id}', 'PemakaianFasilitasController@show')->where('id', '(.*)');
+Route::get('invoice-pemakaian-fasilitas/{pelanggan}/{keperluan}/{periode}', 'PemakaianFasilitasController@invoicePemakaian')->name('PemakaianFasilitas.invoice');
+Route::get('preview-pemakaian-fasilitas/{pelanggan}/{keperluan}/{periode}', 'PemakaianFasilitasController@previewPemakaian');
+Route::get('fasilitas-tidakterpakai', 'PemakaianFasilitasController@fasilitasTidakTerpakai');
+Route::get('accLaboran/fasilitas/{id}', 'PemakaianFasilitasController@AccLaboran')->where('id', '(.*)');
+Route::get('accKoordinator/fasilitas/{id}/{pelanggan}/{keperluan}/{periode}', 'PemakaianFasilitasController@AccKoordinator')->where('id', '(.*)');
+Route::get('accKalab/fasilitas/{id}/{pelanggan}/{keperluan}/{periode}', 'PemakaianFasilitasController@AccKalab')->where('id', '(.*)');
+
+/* ---------------- END ----------------- */
+
 //Bahan
 Route::post('bahan/tambah-bahan', 'BahanController@store')->name('Bahan.store');
 Route::post('/bahan/{id}/update', 'BahanController@update')->name('Bahan.update');
@@ -280,14 +375,5 @@ Route::fallback(function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-
 
 

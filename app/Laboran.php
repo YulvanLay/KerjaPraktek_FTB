@@ -50,4 +50,14 @@ class Laboran extends Model
     {
         return $this->belongsTo('App\Pejabat', 'kalab');
     }
+
+    public function peminjamanInventaris()
+    {
+        return $this->hasMany('App\PeminjamanInventaris', 'kode_laboran');
+    }
+
+    public function pemakaianFasilitas()
+    {
+        return $this->hasMany('App\PemakaianFasilitas', 'kode_laboran');
+    }
 }

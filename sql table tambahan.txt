@@ -1,0 +1,6 @@
+1) tabel 'password_resets'
+CREATE TABLE `password_resets` (
+  `email`      varchar(200) NOT NULL,
+  `token`      varchar(255) NOT NULL,
+  `created_at` timestamp    NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

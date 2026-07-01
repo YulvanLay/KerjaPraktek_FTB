@@ -1,0 +1,193 @@
+@extends('layouts.app')
+
+@section('title', 'Pemakaian Fasilitas')
+
+@section('content')
+    <div class="row">
+        <div class="col-sm-6">
+            <a class="btn btn-link" href="{{ url('pakai-fasilitas') }}">
+                < Kembali</a>
+        </div>
+    </div><br>
+    <div class="row">
+        <div class="col-sm-12">
+            @if(auth()->user()->pelanggan)
+                <h2>Usulan Pemakaian Fasilitas</h2>
+            @else
+                <h2>Pemakaian Fasilitas</h2>
+            @endif
+        </div>
+    </div><br>
+    <form id="form-pemakaian" action="{{ action('PemakaianFasilitasController@store') }}" method="POST">
+        @csrf
+        <div class="form-group">
+            <label class="col-sm-2 col-form-label" for="pelanggan">Pelanggan</label>
+            <select name="pelanggan" class="select2 form-control col-sm-4" required>
+                <option value="" selected hidden disabled>-- Pilih Pelanggan --</option>
+                @foreach($pelanggans as $pelanggan)
+                    @if(auth()->user()->laboran || auth()->user()->koordinator || auth()->user()->kalab)
+                        <option value="{{ $pelanggan->kode_pelanggan }}">{{ $pelanggan->nama_pelanggan }}</option>
+                    @elseif(auth()->user()->pelanggan)
+                        @if(auth()->user()->pelanggan->kode_pelanggan == $pelanggan->kode_pelanggan)
+                            <option value="{{ $pelanggan->kode_pelanggan }}" hidden selected>{{ $pelanggan->nama_pelanggan }}</option>
+                        @endif
+                    @endif
+                @endforeach
+            </select>
+            <span class="help-block">{{ $errors->first('pelanggan', ':message') }}</span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 col-form-label" for="keperluan">Keperluan</label>
+            <select name="keperluan" class="select2 form-control col-sm-4" required>
+                <option value="" selected hidden disabled>-- Pilih Keperluan --</option>
+                @foreach($keperluans as $keperluan)
+                    <option value="{{ $keperluan->kode_keperluan }}" {{ old('keperluan') === $keperluan->kode_keperluan ? ' selected' : '' }}>{{ $keperluan->nama_keperluan }}</option>
+                @endforeach
+            </select>
+            <span class="help-block">{{ $errors->first('keperluan', ':message') }}</span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 col-form-label" for="periode">Periode</label>
+            <select name="periode" class="select2 form-control col-sm-4" required>
+                @foreach($periodes as $periode)
+                    <option value="{{ $periode->id_periode }}" {{ old('periode') === $periode->id_periode ? ' selected' : '' }}>
+                        {{ $periode->nama_periode }}</option>
+                @endforeach
+            </select>
+            <span class="help-block">{{ $errors->first('periode', ':message') }}</span>
+        </div>
+        <div class="form-group row ml-0">
+            <label class="col-sm-2 col-form-label" for="tanggal">Tanggal</label>
+            <input type="text" class="form-control datepicker col-sm-4" id="tanggal" name="tanggal"
+                data-provide="datepicker" required readonly>
+            <input type="text" class="form-control datepicker" id="tanggal2" name="tanggal2" data-provide="datepicker"
+                hidden>
+        </div>
+
+        <table id="table-pemakaian" class="table">
+            <thead>
+                <tr class="text-center">
+                    <th>Nama Fasilitas</th>
+                    <th>Jumlah</th>
+                    <th width=5%></th>
+                    <th width=2%></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="width:80%;">
+                        <select class="fasilitas select2 col-sm-12" name="fasilitas[]" id="fasilitas_1"
+                            onchange="cbganti(value, id);">
+                            @foreach($fasilitas as $item)
+                                <option value="{{ $item->kode_fasilitas }}" {{ $item->stok <= 0 ? ' disabled' : '' }}>
+                                    {{ $item->kode_fasilitas }} - {{ $item->nama_fasilitas }}@if($item->lokasi)
+                                    ({{ $item->lokasi }})@endif (stok: {{ $item->stok }})</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <input type="hidden" id="hidden_1" value="FAS0001">
+                    <td>
+                        <input class="text-right jumlah" type="number" id="textbox_1" name="jumlah[]" min="1" step="1"
+                            value=1 onchange="tbganti(value, id);" oninvalid="this.setCustomValidity('Jumlah harus diisi')"
+                            oninput="setCustomValidity('')">
+                        <p id="msgjumlah_1"></p>
+                    </td>
+                    <td><a class="deleteRow"></a></td>
+                    <td></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan='1'></td>
+                    <td></td>
+                    <td>
+                        <input type="button" class="btn btn-md btn-block btn-success" id="addrow" value="Tambah Baris" />
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="submit" class="btn btn-primary" onclick="simpan();">Simpan</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </form>
+
+    <script type="text/javascript" src="{{ URL::asset('js/custom-date-picker.js') }}">
+        function cbganti(value, id) {
+            $x = id.split("_");
+            $("#hidden_" + $x[1]).val($("#" + id).val());
+        }
+
+        function tbganti(value, id) {
+            $x = id.split("_");
+            var kode_fasilitas = $("#fasilitas_" + $x[1]).val();
+            $.post('{{route("Fasilitas.cekstok")}}',
+                {
+                    _token: "<?php echo csrf_token() ?>",
+                    kode_fasilitas: kode_fasilitas,
+                    value: value,
+                },
+                function (data) {
+                    if (data.status == "lebih") {
+                        $("#msgjumlah_" + $x[1]).html("<p style='color:red;'>* Jumlah input melebihi stok yang tersedia<p>");
+                    }
+                    else {
+                        $("#msgjumlah_" + $x[1]).html("");
+                    }
+                });
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.select2').select2({
+                width: '100%',
+                dropdownAutoWidth: true
+            });
+            $("#tanggal").datepicker(options);
+            $("#tanggal").datepicker().datepicker("setDate", new Date());
+
+            var counter = 0;
+            var count = 1;
+            $("#addrow").on("click", function () {
+                var newRow = $("<tr>");
+                var cols = "";
+                count++;
+
+                cols += '<td><select class="fasilitas select2 col-sm-12" id="fasilitas_' + count + '" onchange="cbganti(value,id);" name="fasilitas[]">@foreach($fasilitas as $item)<option value="{{ $item->kode_fasilitas }}">{{ $item->kode_fasilitas }} - {{ $item->nama_fasilitas }}@if($item->lokasi) ({{ $item->lokasi }})@endif (stok: {{ $item->stok }})</option>@endforeach</select></td>';
+                cols += '<td><input class="text-right jumlah" type="number" id="textbox_' + count + '" onchange="tbganti(value, id);" name="jumlah[]" min="1" step="1" value=1> <p id="msgjumlah_' + count + '"></p></td>';
+                cols += '<input type="hidden" id="hidden_' + count + '" value="FAS0001">';
+
+                cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger "  value="Hapus"></td>';
+                newRow.append(cols);
+                $("#table-pemakaian").append(newRow);
+                $('.select2').select2({
+                    width: '100%',
+                    dropdownAutoWidth: true
+                });
+                counter++;
+            });
+
+            $("#table-pemakaian").on("click", ".ibtnDel", function (event) {
+                $(this).closest("tr").remove();
+                counter -= 1
+            });
+
+            $("tbody").on('keyup', '.jumlah', function () {
+                if (!($(this).val() % 1 === 0))
+                    $(this).val(Math.floor($(this).val()));
+            });
+        });
+
+        function simpan() {
+            $('input[name="jumlah[]"]').each(function () {
+                if ($(this).val() <= 0) {
+                    $(this).val(1)
+                }
+            });
+
+            var dateTime = new Date($("#tanggal").datepicker("getDate"));
+            var strDateTime = dateTime.getFullYear() + "-" + ('0' + (dateTime.getMonth() + 1)).slice(-2) + "-" + ('0' + dateTime.getDate()).slice(-2);
+            $("#tanggal2").val(strDateTime);
+            $('#form-pemakaian').submit();
+        }
+    </script>
+@endsection

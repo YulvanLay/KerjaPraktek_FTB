@@ -20,4 +20,14 @@ class Pelanggan extends Model
     {
         return $this->hasMany('App\PemakaianBahan', 'kode_pelanggan');
     }
+
+    public function peminjamanInventaris()
+    {
+        return $this->hasMany('App\PeminjamanInventaris', 'kode_pelanggan');
+    }
+
+    public function pemakaianFasilitas()
+    {
+        return $this->hasMany('App\PemakaianFasilitas', 'kode_pelanggan');
+    }
 }

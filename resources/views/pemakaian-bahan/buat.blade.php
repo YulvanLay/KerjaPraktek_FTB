@@ -5,7 +5,7 @@
 @section('content')
 <div class="row">
     <div class="col-sm-6">
-        <a class="btn btn-link" href="{{ url('terima-bahan') }}">< Kembali</a>
+        <a class="btn btn-link" href="{{ url('pakai-bahan') }}">< Kembali</a>
     </div>
 </div><br>
 <div class="row">

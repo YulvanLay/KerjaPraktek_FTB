@@ -20,4 +20,14 @@ class Periode extends Model
     {
         return $this->hasMany('App\PemakaianBahan', 'periode_id');
     }
+
+    public function peminjamanInventaris()
+    {
+        return $this->hasMany('App\PeminjamanInventaris', 'periode_id');
+    }
+
+    public function pemakaianFasilitas()
+    {
+        return $this->hasMany('App\PemakaianFasilitas', 'periode_id');
+    }
 }

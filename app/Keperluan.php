@@ -21,4 +21,14 @@ class Keperluan extends Model
     {
         return $this->hasMany('App\PemakaianBahan', 'kode_keperluan');
     }
+
+    public function peminjamanInventaris()
+    {
+        return $this->hasMany('App\PeminjamanInventaris', 'kode_keperluan');
+    }
+
+    public function pemakaianFasilitas()
+    {
+        return $this->hasMany('App\PemakaianFasilitas', 'kode_keperluan');
+    }
 }
