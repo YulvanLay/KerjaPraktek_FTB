@@ -160,7 +160,29 @@ class AlatController extends Controller
 
     public function getDetailAlatPeminjaman($id)
     {
-        $results = DB::select( DB::raw("SELECT * FROM detail_peminjaman_alats inner join alat_labs on detail_peminjaman_alats.kode_alat = alat_labs.kode_alat WHERE detail_peminjaman_alats.kode_alat ='$id'") );
-        return view('alat.detail-alat', compact('results'));
+        $alat = AlatLab::find($id);
+
+        // Total dipinjam (sudah diverifikasi/acc)
+        $totalDipinjam = DB::table('detail_peminjaman_alats')
+            ->where('kode_alat', $id)
+            ->whereNotNull('jumlah_acc')
+            ->sum('jumlah_acc');
+
+        // Total sudah kembali (hanya dari yang sudah acc)
+        $totalKembali = DB::table('detail_peminjaman_alats')
+            ->where('kode_alat', $id)
+            ->whereNotNull('jumlah_acc') // ← tambah filter ini
+            ->sum('kembali');
+
+        // Detail per transaksi
+        $results = DB::select(DB::raw("
+            SELECT detail_peminjaman_alats.*, alat_labs.nama_alat
+            FROM detail_peminjaman_alats
+            INNER JOIN alat_labs ON detail_peminjaman_alats.kode_alat = alat_labs.kode_alat
+            WHERE detail_peminjaman_alats.kode_alat = '$id'
+            AND detail_peminjaman_alats.jumlah_acc IS NOT NULL
+        "));
+
+        return view('alat.detail-alat', compact('results', 'alat', 'totalDipinjam', 'totalKembali'));
     }
 }
