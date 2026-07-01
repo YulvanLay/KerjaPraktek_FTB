@@ -60,7 +60,8 @@ Route::resource('pinjam-alat-detail', 'DetailPeminjamanAlatController');
 Route::post('pinjam-alat/updatedata', 'DetailPeminjamanAlatController@updatedata')->name('DetailPeminjamanAlat.updateData');
 Route::post('pinjam-alat/updatedataverif', 'DetailPeminjamanAlatController@updatedataverif')->name('DetailPeminjamanAlat.updateDataVerif');
 Route::post('/kembali-alat/kembali', 'DetailPeminjamanAlatController@kembali2')->name('DetailPeminjamanAlat.kembali2');
-
+Route::get('/pinjam-alat-detail/{id}/edit', 'DetailPeminjamanAlatController@edit')->where('id', '(.*)')->name('DetailPeminjamanAlat.edit');
+Route::delete('/pinjam-alat-detail/hapus-detail/{id}', 'DetailPeminjamanAlatController@destroy')->name('DetailPeminjamanAlat.destroy');
 Route::delete('/hapus-riwayat/{id}', 'DetailPengembalianAlatController@destroy');
 
 /* --- Tambahan Menu Inventaris & Fasilitas Lab --- */
@@ -228,15 +229,14 @@ Route::get('terima-bahan', 'PenerimaanBahanController@index');
 //Detail Penerimaan Bahan
 Route::get('terima-bahan-detail/get-info-detail/{id}', 'DetailPenerimaanBahanController@getInfoDetail');
 Route::get('terima-bahan-detail/tambah-detail/{id}', 'DetailPenerimaanBahanController@tambahDetail')->where('id', '(.*)');
-Route::get('terima-bahan-detail/{noPO}', 'DetailPenerimaanBahanController@show')->where('noPO', '(.*)');
-Route::get('terima-bahan-detail/tambah', 'DetailPenerimaanBahanController@create');
+Route::get('terima-bahan-detail/tambah', 'DetailPenerimaanBahanController@create');         // ← naik ke atas
 Route::post('terima-bahan-detail/tambah', 'DetailPenerimaanBahanController@store')->name('DetailPenerimaanBahan.store');
-Route::get('/terima-bahan-detail/{id}/edit', 'DetailPenerimaanBahanController@edit');
+Route::get('/terima-bahan-detail/{id}/edit', 'DetailPenerimaanBahanController@edit')->name('DetailPenerimaanBahan.edit'); // ← gabung jadi 1
 Route::post('/terima-bahan-detail/{id}/update', 'DetailPenerimaanBahanController@update')->name('DetailPenerimaanBahan.update');
 Route::delete('terima-bahan-detail/hapus-detail/{id}', 'DetailPenerimaanBahanController@destroy');
 Route::get('terima-bahan-detail', 'DetailPenerimaanBahanController@index');
+Route::get('terima-bahan-detail/{noPO}', 'DetailPenerimaanBahanController@show')->where('noPO', '(.*)');
 // Route::resource('terima-bahan-detail', 'DetailPenerimaanBahanController');
-
 //Laporan Pemakaian Alat
 Route::get('laporan-peminjaman-alat/', 'PeminjamanAlatController@laporan');
 Route::get('invoice-peminjaman-alat/{pelanggan}/{keperluan}/{periode}', 'PeminjamanAlatController@invoicePeminjaman')->name('PeminjamanAlat.invoice');
@@ -250,6 +250,17 @@ Route::get('accKalab/alat/{id}/{pelanggan}/{keperluan}/{periode}', 'PeminjamanAl
 //Laporan Pemakaian Bahan
 Route::get('laporan-pemakaian-bahan/', 'PemakaianBahanController@laporan');
 Route::get('laporan-pemakaian-bahan/laporanku', 'PemakaianBahanController@laporanku');
+
+//Bebas Laboratorium
+Route::get('bebas-lab/', 'BebasLaboratoriumController@laporan');
+Route::get('/bebas-lab/{kode_pelanggan}', 'BebasLaboratoriumController@getByPelanggan');
+Route::get('/bebas-lab/detail/{id}', 'BebasLaboratoriumController@getDetail');
+Route::get('/bebas-lab-preview/{id}', 'BebasLaboratoriumController@showPreview');
+Route::post('/bebas-lab/update-checklist', 'BebasLaboratoriumController@updateChecklist');
+Route::post('/bebas-lab/acc-laboran', 'BebasLaboratoriumController@accLaboran');
+Route::post('/bebas-lab/batal-acc-laboran', 'BebasLaboratoriumController@batalAccLaboran');
+Route::post('/bebas-lab/acc-kalab', 'BebasLaboratoriumController@accKalab');
+Route::get('form-bebas-lab/{kodePelanggan}/{namaLab}', 'BebasLaboratoriumController@cetak');
 
 Route::get('pemakaian-bahan/{id}/{tglmulai}/{tglakhir}', 'PemakaianBahanController@show');
 Route::get('pemakaian-bahan/pernota/{id}/{tglmulai}/{tglakhir}', 'PemakaianBahanController@showPernota');
@@ -375,5 +386,50 @@ Route::fallback(function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+// Route::get('/generate-bebas-lab-lama', function () {
+
+// 	$pelanggans = App\Pelanggan::all();
+// 	$laboratoriums = App\Laboratorium::all();
+
+// 	foreach ($pelanggans as $pelanggan) {
+
+// 		foreach ($laboratoriums as $lab) {
+
+// 			$cek = App\BebasLaboratorium::where(
+// 				'kode_pelanggan',
+// 				$pelanggan->kode_pelanggan
+// 			)
+// 				->where(
+// 					'laboratorium_id',
+// 					$lab->id
+// 				)
+// 				->exists();
+
+// 			if (!$cek) {
+
+// 				$bebas = new App\BebasLaboratorium();
+
+// 				$bebas->kode_pelanggan = $pelanggan->kode_pelanggan;
+// 				$bebas->laboratorium_id = $lab->id;
+
+// 				$bebas->ck_bebas_pinjaman = 0;
+// 				$bebas->ck_buka_bakteri = 0;
+// 				$bebas->ck_bayar_bahan = 0;
+// 				$bebas->ck_alat_bersih = 0;
+// 				$bebas->ck_alat_ganti = 0;
+
+// 				$bebas->acc_laboran = 0;
+// 				$bebas->acc_kalab = 0;
+
+// 				$bebas->save();
+// 			}
+// 		}
+// 	}
+
+// 	return 'Selesai';
+// });
+
+
 
 

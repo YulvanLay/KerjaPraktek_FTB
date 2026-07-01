@@ -188,6 +188,10 @@
 
                             </div>
                         </li>
+
+                        <li class="nav-item{{ request()->is('bebas-lab*') ? ' active' : '' }}">
+                            <a class="nav-link" href="{{ url('bebas-lab') }}">Bebas Lab</a>
+                        </li>
                         <li class="nav-item dropdown{{ request()->is('lainnya*') ? ' active' : '' }}">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">Lainnya</a>
@@ -285,6 +289,10 @@
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ url('laporan-pemakaian-bahan') }}">Laporan Pemakaian Bahan</a>
                             </div>
+                        </li>
+
+                        <li class="nav-item{{ request()->is('bebas-lab*') ? ' active' : '' }}">
+                            <a class="nav-link" href="{{ url('bebas-lab') }}">Bebas Lab</a>
                         </li>
                     @elseif(Auth::user()->admin)
                         <li class="nav-item{{ request()->is('lainnya/keperluan') ? ' active' : '' }}">
