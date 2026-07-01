@@ -165,13 +165,13 @@ class AlatController extends Controller
         // Total dipinjam (sudah diverifikasi/acc)
         $totalDipinjam = DB::table('detail_peminjaman_alats')
             ->where('kode_alat', $id)
-            ->whereNotNull('jumlah_acc')
-            ->sum('jumlah_acc');
+            ->whereNotNull('jumlah')
+            ->sum('jumlah');
 
         // Total sudah kembali (hanya dari yang sudah acc)
         $totalKembali = DB::table('detail_peminjaman_alats')
             ->where('kode_alat', $id)
-            ->whereNotNull('jumlah_acc') // ← tambah filter ini
+            ->whereNotNull('jumlah')
             ->sum('kembali');
 
         // Detail per transaksi
@@ -180,8 +180,13 @@ class AlatController extends Controller
             FROM detail_peminjaman_alats
             INNER JOIN alat_labs ON detail_peminjaman_alats.kode_alat = alat_labs.kode_alat
             WHERE detail_peminjaman_alats.kode_alat = '$id'
-            AND detail_peminjaman_alats.jumlah_acc IS NOT NULL
+            AND detail_peminjaman_alats.jumlah IS NOT NULL
         "));
+
+        foreach ($results as $result) {
+            $result->kembali = $result->kembali ?? 0; // Jika null, set ke 0
+            $result->belum_kembali = $result->jumlah - ($result->kembali ?? 0);
+        }
 
         return view('alat.detail-alat', compact('results', 'alat', 'totalDipinjam', 'totalKembali'));
     }

@@ -171,17 +171,20 @@ class BahanController extends Controller
     public function getDetailBahanPemakaian($id)
     {
         $bahan = BahanLab::find($id);
+        $bahan->stok = preg_replace("/\,?0+$/", "", number_format($bahan->stok, 2, ',', '.'));
 
         // Total diterima dari penerimaan bahan
         $totalDiterima = DB::table('detail_penerimaan_bahans')
             ->where('kode_bahan', $id)
             ->sum('jumlah');
+        $totalDiterima = preg_replace("/\,?0+$/", "", number_format($totalDiterima, 2, ',', '.'));
 
-        // Total sudah dipakai (jumlah_acc = yang sudah diverifikasi/dipakai)
+        // Total bahan yg sudah dipakai
         $totalDipakai = DB::table('detail_pemakaian_bahans')
             ->where('kode_bahan', $id)
-            ->whereNotNull('jumlah_acc')
-            ->sum('jumlah_acc');
+            ->whereNotNull('jumlah')
+            ->sum('jumlah');
+        $totalDipakai = preg_replace("/\,?0+$/", "", number_format($totalDipakai, 2, ',', '.'));
 
         // Detail per transaksi pemakaian
         $results = DB::select(DB::raw("
@@ -189,8 +192,12 @@ class BahanController extends Controller
             FROM detail_pemakaian_bahans
             INNER JOIN bahan_labs ON detail_pemakaian_bahans.kode_bahan = bahan_labs.kode_bahan
             WHERE detail_pemakaian_bahans.kode_bahan = '$id'
-            AND detail_pemakaian_bahans.jumlah_acc IS NOT NULL
+            AND detail_pemakaian_bahans.jumlah IS NOT NULL
         "));
+
+        foreach ($results as $result) {
+            $result->jumlah = preg_replace("/\,?0+$/", "", number_format($result->jumlah, 2, ',', '.'));
+        }
 
         return view('bahan.detail-bahan', compact('results', 'bahan', 'totalDiterima', 'totalDipakai'));
     }

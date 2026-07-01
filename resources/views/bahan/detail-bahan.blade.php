@@ -22,7 +22,7 @@
                 <div class="card-body">
                     <h6 class="card-title text-muted">Total Diterima</h6>
                     <h3 class="text-primary">
-                        {{ number_format($totalDiterima, 2, ',', '.') }}
+                        {{ $totalDiterima }}
                         <small class="text-muted" style="font-size:14px">{{ $bahan->satuan }}</small>
                     </h3>
                     <small class="text-muted">via transaksi penerimaan</small>
@@ -34,7 +34,7 @@
                 <div class="card-body">
                     <h6 class="card-title text-muted">Sudah Dipakai</h6>
                     <h3 class="text-danger">
-                        {{ number_format($totalDipakai, 2, ',', '.') }}
+                        {{ $totalDipakai }}
                         <small class="text-muted" style="font-size:14px">{{ $bahan->satuan }}</small>
                     </h3>
                 </div>
@@ -45,7 +45,7 @@
                 <div class="card-body">
                     <h6 class="card-title text-muted">Sisa Stok</h6>
                     <h3 class="{{ $bahan->stok <= $bahan->minimum_stok ? 'text-warning' : 'text-success' }}">
-                        {{ number_format($bahan->stok, 2, ',', '.') }}
+                        {{ $bahan->stok }}
                         <small class="text-muted" style="font-size:14px">{{ $bahan->satuan }}</small>
                     </h3>
                 </div>
@@ -65,7 +65,7 @@
             @foreach($results as $d)
                 <tr>
                     <td>{{ $d->no_transaksi }}</td>
-                    <td>{{ number_format($d->jumlah_acc, 2, ',', '.') }} {{ $d->satuan }}</td>
+                    <td>{{ $d->jumlah }} {{ $d->satuan }}</td>
                 </tr>
             @endforeach
         </tbody>
