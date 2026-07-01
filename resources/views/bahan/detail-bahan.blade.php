@@ -5,30 +5,67 @@
 @section('content')
     <div class="row">
         <div class="col-sm-6">
-            <a class="btn btn-link" href="{{ url('bahan') }}">
-                < Kembali</a>
+            <a class="btn btn-link" href="{{ url('bahan') }}">< Kembali</a>
         </div>
     </div><br>
+
     <div class="row">
         <div class="col-sm-12">
-            <h2>
-                Detail Pemakaian Bahan
-                {{ count($results) > 0 ? $results[0]->nama_bahan : '' }}
-            </h2>
+            <h2>Detail Pemakaian Bahan — {{ $bahan->nama_bahan }}</h2>
         </div>
     </div><br>
+
+    {{-- Ringkasan Stok --}}
+    <div class="row mb-4">
+        <div class="col-sm-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Total Diterima</h6>
+                    <h3 class="text-primary">
+                        {{ number_format($totalDiterima, 2, ',', '.') }}
+                        <small class="text-muted" style="font-size:14px">{{ $bahan->satuan }}</small>
+                    </h3>
+                    <small class="text-muted">via transaksi penerimaan</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Sudah Dipakai</h6>
+                    <h3 class="text-danger">
+                        {{ number_format($totalDipakai, 2, ',', '.') }}
+                        <small class="text-muted" style="font-size:14px">{{ $bahan->satuan }}</small>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Sisa Stok</h6>
+                    <h3 class="{{ $bahan->stok <= $bahan->minimum_stok ? 'text-warning' : 'text-success' }}">
+                        {{ number_format($bahan->stok, 2, ',', '.') }}
+                        <small class="text-muted" style="font-size:14px">{{ $bahan->satuan }}</small>
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Tabel Detail Pemakaian --}}
     <table id="tabel-pemakaian" class="datatable stripe hover row-border order-column cell-border" style="width:100%">
         <thead>
             <tr>
                 <th>No Transaksi</th>
-                <th>Jumlah</th>
+                <th>Jumlah Dipakai</th>
             </tr>
         </thead>
         <tbody>
             @foreach($results as $d)
                 <tr>
                     <td>{{ $d->no_transaksi }}</td>
-                    <td>{{ $d->jumlah }}</td>
+                    <td>{{ number_format($d->jumlah_acc, 2, ',', '.') }} {{ $d->satuan }}</td>
                 </tr>
             @endforeach
         </tbody>

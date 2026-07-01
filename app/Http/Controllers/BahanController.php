@@ -167,9 +167,31 @@ class BahanController extends Controller
 
         return redirect('/bahan')->with('status', 'Berhasil menghapus bahan <strong>' . $nama_bahan . '</strong>.')->with('kode', 1);
     }
+
     public function getDetailBahanPemakaian($id)
     {
-        $results = DB::select(DB::raw("SELECT * FROM detail_pemakaian_bahans  inner join bahan_labs  on detail_pemakaian_bahans.kode_bahan  = bahan_labs.kode_bahan  WHERE detail_pemakaian_bahans.kode_bahan ='$id'"));
-        return view('bahan.detail-bahan', compact('results'));
+        $bahan = BahanLab::find($id);
+
+        // Total diterima dari penerimaan bahan
+        $totalDiterima = DB::table('detail_penerimaan_bahans')
+            ->where('kode_bahan', $id)
+            ->sum('jumlah');
+
+        // Total sudah dipakai (jumlah_acc = yang sudah diverifikasi/dipakai)
+        $totalDipakai = DB::table('detail_pemakaian_bahans')
+            ->where('kode_bahan', $id)
+            ->whereNotNull('jumlah_acc')
+            ->sum('jumlah_acc');
+
+        // Detail per transaksi pemakaian
+        $results = DB::select(DB::raw("
+            SELECT detail_pemakaian_bahans.*, bahan_labs.nama_bahan, bahan_labs.satuan
+            FROM detail_pemakaian_bahans
+            INNER JOIN bahan_labs ON detail_pemakaian_bahans.kode_bahan = bahan_labs.kode_bahan
+            WHERE detail_pemakaian_bahans.kode_bahan = '$id'
+            AND detail_pemakaian_bahans.jumlah_acc IS NOT NULL
+        "));
+
+        return view('bahan.detail-bahan', compact('results', 'bahan', 'totalDiterima', 'totalDipakai'));
     }
 }
